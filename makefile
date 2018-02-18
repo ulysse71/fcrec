@@ -1,4 +1,4 @@
-all	: fcrec convertbin
+all	: fcrec
 
 convertbin	: convertbin.c
 	gcc -O3 -Wall -Wextra convertbin.c -lm -o convertbin
