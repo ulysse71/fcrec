@@ -1,0 +1,13 @@
+#!/bin/sh
+
+file=$1;
+
+#./fcrec 107.7 35 8
+
+./demod.opt wfm fcrec.dat 96000 
+convertasc.opt sound.dat S16LE
+cp -v sample.bin sample.raw
+sox -r 96000 -L -t s16 -c 1 sample.raw sample.wav
+mplayer sample.wav
+#audacity sample.wav
+
