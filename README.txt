@@ -10,3 +10,6 @@ example:
   then process FM demodulation with
   ./try-pyfm fcrec.dat
 
+TODO
+  correct build against HIDAPI
+
