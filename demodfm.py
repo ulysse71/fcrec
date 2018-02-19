@@ -1,10 +1,14 @@
+import sys
 import math
+
 
 ll = []
 
-f = open('fcrec.dat','r')
-ll = f.readlines()
-f.close()
+filename=sys.argv[1]
+print("reading data from file "+filename)
+fd = open(filename, 'r')
+ll = fd.readlines()
+fd.close()
 
 c=0
 liq = []
@@ -15,20 +19,22 @@ for c in xrange(llen2):
   q = ll[2*c+1]
   liq.append((i, q))
 
-#print("len", llen)
+print("len "+str(llen))
+
+twopi = 2. * math.pi
 
 def regul(dtheta):
   if dtheta>math.pi:
-    dtheta = dtheta - 2.*math.pi
+    dtheta = dtheta - twopi
   elif dtheta<-math.pi:
-    dtheta = dtheta + 2.*math.pi
+    dtheta = dtheta + twopi
   return(dtheta)
 
 freq=96000
 dt=1./freq
 
 lv = []
-coeff = 0.1
+coeff = 0.05
 theta0=0.
 mx=0
 mn=0
@@ -45,9 +51,12 @@ for c in xrange(llen2):
   theta0 = theta1
 
 # ascii dump
-for v in lv: print(v)
+fd = open("demodfm.dat", 'w')
+for v in lv: fd.write(str(v)+"\n")
+fd.close()
 
 # scipy wav dump
 #import scipy.io.wavfile
-#scipy.io.wavfile.write("fcrec.wav", freq, lv)
+#import numpy
+#scipy.io.wavfile.write("sample.wav", freq, numpy.array(lv))
 

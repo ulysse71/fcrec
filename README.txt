@@ -8,5 +8,5 @@ example:
   ./fcrec 105.5 20 8
 
   then process FM demodulation with
-  ./try-pyfm
+  ./try-pyfm fcrec.dat
 
