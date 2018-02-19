@@ -1,0 +1,16 @@
+#!/bin/sh
+
+rm -f sample.wav
+python demodfm.py > demodfm.dat 
+
+# convert txt to wav
+convertasc.opt demodfm.dat S16LE
+cp -v sample.bin sample.raw
+sox -r 96000 -L -t s16 -c 1 sample.raw sample.wav gain 1
+
+# play wav file
+mplayer sample.wav
+
+# view wav file
+#audacity sample.wav
+
