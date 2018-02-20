@@ -1,6 +1,6 @@
 Light Funcube Reader
 
-For educationnal purpose
+For educational purpose
 
 Beware, wont compile, needs HIDAPI to work
 see //github.com/csete/fcdctl.git
