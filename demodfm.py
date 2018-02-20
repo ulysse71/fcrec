@@ -1,7 +1,6 @@
 import sys
 import math
 
-
 ll = []
 
 filename=sys.argv[1]
@@ -49,6 +48,9 @@ for c in xrange(llen2):
   if v>mx: mx=v
   lv.append(v)
   theta0 = theta1
+
+print("mx "+str(mx))
+print("mn "+str(mn))
 
 # ascii dump
 fd = open("demodfm.dat", 'w')

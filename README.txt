@@ -1,5 +1,7 @@
 Light Funcube Reader
 
+For educationnal purpose
+
 Beware, wont compile, needs HIDAPI to work
 see //github.com/csete/fcdctl.git
 
@@ -9,6 +11,9 @@ example:
 
   then process FM demodulation with
   ./try-pyfm fcrec.dat
+
+  or process AM demodulation with
+  ./try-pyam fcrec.dat
 
 TODO
   correct build against HIDAPI
