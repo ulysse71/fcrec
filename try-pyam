@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 rm -f sample.{raw,wav}
 python3 demodam.py $1

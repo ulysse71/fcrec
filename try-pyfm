@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 
-rm -f sample.{raw,wav}
+rm -vf sample.{raw,wav}
 python3 demodfm.py $1
 
 # convert txt to wav
