@@ -12,8 +12,8 @@ fd.close()
 c=0
 liq = []
 llen = len(ll)
-llen2 = llen/2
-for c in xrange(llen2):
+llen2 = int(llen/2)
+for c in range(llen2):
   i = ll[2*c]
   q = ll[2*c+1]
   liq.append((i, q))
@@ -37,7 +37,7 @@ coeff = 0.05
 theta0=0.
 mx=0
 mn=0
-for c in xrange(llen2):
+for c in range(llen2):
   i = ll[2*c]
   q = ll[2*c+1]
   theta1 = math.atan2(float(q), float(i))
@@ -54,11 +54,12 @@ print("mn "+str(mn))
 
 # ascii dump
 fd = open("demodfm.dat", 'w')
-for v in lv: fd.write(str(v)+"\n")
+for v in lv: fd.write(str(int(v))+"\n")
 fd.close()
 
 # scipy wav dump
 #import scipy.io.wavfile
 #import numpy
+#lv = map(lambda x: 0.5*x/mx, lv)
 #scipy.io.wavfile.write("sample.wav", freq, numpy.array(lv))
 

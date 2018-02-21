@@ -9,8 +9,6 @@
 
 #include <math.h>
 
-// based on the #defines for TLGE_P10_0DB etc. from fcdhidcmd.h :
-double lnagainvalues[]={-5.0,-2.5,-999,-999,0,2.5,5,7.5,10,12.5,15,17.5,20,25,30};
 
 inline double sqr(double x) { return x*x; }
 
@@ -21,7 +19,7 @@ void writeAscii(FILE *fdo, short int *buf, int n)
 }
 
 /********************************************************************/
-/** statistics **/
+/** statistics && power **/
 
 struct statT {
   int nb;
@@ -29,8 +27,15 @@ struct statT {
   double sx2;
 };
 
+void stats_reset(struct statT *st)
+{
+  st->nb = 0;
+  st->sx = st->sx2 = 0.;
+}
+
 void stats_sum(struct statT *st, short int *buf, int n)
 {
+  /// add content of buffer to stats in st
   int c=0;
   for (c=0; c<n; c++) {
     st->sx += buf[c];
@@ -59,13 +64,25 @@ void stats_edit(FILE *fdo, struct statT *st)
   fprintf(fdo, "sdev %g\n", sqrt(var));
 }
 
+void stats_add(struct statT *st1, struct statT *st2)
+{
+  /// add stat of st2 to st1
+  st1->nb += st2->nb;
+  st1->sx += st2->sx;
+  st1->sx2 += st2->sx2;
+}
+
 int stats_high(struct statT *st, double sql)
 {
+  /// tells if var (or power) is above level
   return stats_var(st, stats_mean(st)) > sql;
 }
 
 /****************************************************************/
 /** SDR stuff **/
+
+// based on the #defines for TLGE_P10_0DB etc. from fcdhidcmd.h :
+double lnagainvalues[]={-5.0,-2.5,-999,-999,0,2.5,5,7.5,10,12.5,15,17.5,20,25,30};
 
 snd_pcm_t *handle;
 snd_pcm_uframes_t frames;
@@ -78,10 +95,10 @@ void dumpSdr()
   fcdGetFwVerStr(version);
   printf("# funcube version %s\n", version);
 
-  uint8_t f[8];
-  fcdAppGetParam(FCD_CMD_APP_GET_FREQ_HZ, f, 8);
-  printf("# frequency %g MHz\n", (*(int*)f)/1e6);
-  
+  // uint8_t f[8];
+  // fcdAppGetParam(FCD_CMD_APP_GET_FREQ_HZ, f, 8);
+  // printf("# frequency %g MHz\n", (*(int*)f)/1e6);
+
   uint8_t lnagain;
   fcdAppGetParam(FCD_CMD_APP_GET_LNA_GAIN, &lnagain, 1);
   printf("# lna gain %g\n", lnagainvalues[lnagain]);
@@ -195,7 +212,7 @@ void readFuncube(char *buffer, double time, int sz, double sql)
    sz is size of frames
    */
   int dir, rc;
-  long loops;
+  long loops, rloops=0;
   unsigned int val;
 
   printf("dumping file fcrec.raw\n");
@@ -208,7 +225,8 @@ void readFuncube(char *buffer, double time, int sz, double sql)
   /* time seconds in microseconds divided by period time */
   loops = time * 1000000 / val;
   printf("loops %ld\n", loops);
-  struct statT st = { 0, 0., 0. };
+  struct statT sta = { 0, 0., 0. }, // stats for all loops
+	       st;		    // stat for just one loop
 
   while (loops > 0) {
     rc = snd_pcm_readi(handle, buffer, frames);
@@ -222,15 +240,21 @@ void readFuncube(char *buffer, double time, int sz, double sql)
     else if (rc != (int)frames)
       fprintf(stderr, "short read, read %d frames\n", rc);
     // read has been fully satistory
-    else if (stats_high(&st, sql)) {
-      if (write(fdob, buffer, sz*rc) != sz*rc) abort();
-      writeAscii(fdoa, (short int *)buffer, sz*rc/2);
+    else {
+      stats_reset(&st);
+      stats_sum(&st, (short int *)buffer, sz*rc/2);
+      if (stats_high(&st, sql)) {
+	if (write(fdob, buffer, sz*rc) != sz*rc) abort();
+	writeAscii(fdoa, (short int *)buffer, sz*rc/2);
+	rloops++;
+      }
+      stats_add(&sta, &st);
     }
-    stats_sum(&st, (short int *)buffer, sz*rc/2);
     loops--;
   }
 
-  stats_edit(fdoa, &st);
+  printf("loops really done (squelch) %ld\n", rloops);
+  stats_edit(stdout, &sta);
   close(fdob);
   fclose(fdoa);
 }
@@ -249,6 +273,7 @@ int main(int argc, char **argv) {
   double time = atof(argv[3]);
   double sql=0;
   if (argc>4) sql = atof(argv[4]);
+  printf("squelch %g\n", sql);
   openFuncubeSdr(freq, gain);
   //dumpSdr();
   char *buffer =openFuncubePcm(freq);

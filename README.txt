@@ -2,7 +2,7 @@ Light Funcube Reader
 
 For educational purpose
 
-Beware, wont compile, needs HIDAPI to work
+Beware, wont compile, needs HIDAPI and fcdctl to work
 see //github.com/csete/fcdctl.git
 
 example:
@@ -15,6 +15,9 @@ example:
   or process AM demodulation with
   ./try-pyam fcrec.dat
 
+dependencies
+  Install sox
+
 TODO
-  correct build against HIDAPI
+  correct build against HIDAPI and fcdctl
 

@@ -1,11 +1,10 @@
 #!/bin/sh
 
-rm -f sample.wav
-python demodfm.py $1
+rm -f sample.{raw,wav}
+python3 demodfm.py $1
 
 # convert txt to wav
-convertasc.opt demodfm.dat S16LE
-cp -v sample.bin sample.raw
+make convertasc && ./convertasc demodfm.dat S16LE
 sox -r 96000 -L -t s16 -c 1 sample.raw sample.wav gain 0
 
 # play wav file
