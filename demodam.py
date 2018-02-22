@@ -3,26 +3,21 @@ import math
 
 ll = []
 
+# reading IQ data in ASCII file
 filename=sys.argv[1]
 print("reading data from file "+filename)
 fd = open(filename, 'r')
 ll = fd.readlines()
 fd.close()
 
-c=0
-liq = []
 llen = len(ll)
 llen2 = int(llen/2)
-for c in range(llen2):
-  i = ll[2*c]
-  q = ll[2*c+1]
-  liq.append((i, q))
-
 print("len "+str(llen))
 
 freq=96000
 dt=1./freq
 
+# real demodulation 
 lv = []
 coeff = 10.
 mx=0
@@ -30,7 +25,9 @@ mn=0
 for c in range(llen2):
   i = float(ll[2*c])
   q = float(ll[2*c+1])
+  # calculates complex modulus
   v = coeff * math.sqrt(i*i + q*q)
+  # calculates min and max
   if v<mn: mn=v
   if v>mx: mx=v
   lv.append(v)

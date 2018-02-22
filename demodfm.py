@@ -10,16 +10,8 @@ fd = open(filename, 'r')
 ll = fd.readlines()
 fd.close()
 
-# making a list containing IQ pairs
-c=0
-liq = []
 llen = len(ll)
 llen2 = int(llen/2)
-for c in range(llen2):
-  i = ll[2*c]
-  q = ll[2*c+1]
-  liq.append((i, q))
-
 print("len "+str(llen))
 
 twopi = 2. * math.pi
@@ -49,7 +41,7 @@ for c in range(llen2):
   dtheta = theta1 - theta0
   dtheta = regul(dtheta)
   v = coeff * dtheta / dt
-  # also calculates min and max for future renormalization purpose
+  # also calculates min and max
   if v<mn: mn=v
   if v>mx: mx=v
   lv.append(v)
