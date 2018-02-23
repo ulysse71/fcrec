@@ -17,6 +17,8 @@ print("len "+str(llen))
 twopi = 2. * math.pi
 
 def regul(dtheta):
+  # function correction phase corresponding to 
+  #   undetermination of atan function
   if dtheta>math.pi:
     dtheta = dtheta - twopi
   elif dtheta<-math.pi:
